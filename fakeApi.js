@@ -5,36 +5,42 @@ var people = [
         id: 1,
         firstName: 'Henrik',
         lastName: 'Joreteg',
+        things: [{id:42, name:'garbage'},{id:73, name:'magic'}],
         coolnessFactor: 11
     },
     {
         id: 2,
         firstName: 'Bob',
         lastName: 'Saget',
+        things: [],
         coolnessFactor: 2
     },
     {
         id: 3,
         firstName: 'Larry',
         lastName: 'King',
+        things: [],
         coolnessFactor: 4
     },
     {
         id: 4,
         firstName: 'Diana',
         lastName: 'Ross',
+        things: [],
         coolnessFactor: 6
     },
     {
         id: 5,
         firstName: 'Crazy',
         lastName: 'Dave',
+        things: [],
         coolnessFactor: 8
     },
     {
         id: 6,
         firstName: 'Larry',
         lastName: 'Johannson',
+        things: [],
         coolnessFactor: 4
     }
 ];
@@ -42,6 +48,10 @@ var id = 7;
 
 function get(id) {
     return _.findWhere(people, {id: parseInt(id + '', 10)});
+}
+
+function getThing(id, things) {
+    return _.findWhere(things, {id: parseInt(id + '', 10)});
 }
 
 exports.register = function (server, options, next) {
@@ -90,6 +100,54 @@ exports.register = function (server, options, next) {
             var found = get(request.params.id);
             if (found) _.extend(found, request.payload);
             reply(found).code(found ? 200 : 404);
+        }
+    });
+
+
+
+
+
+
+    server.route({
+        method: 'POST',
+        path: '/api/people/{id}/things',
+        handler: function (request, reply) {
+            var thing = request.payload;
+            thing.id = Math.random()*1000|0;
+            var found = get(request.params.id);
+            found.things.push(thing);
+            reply(thing).code(201);
+        }
+    });
+
+    server.route({
+        method: 'GET',
+        path: '/api/people/{id}/things',
+        handler: function (request, reply) {
+            var found = get(request.params.id);
+            reply(found.things).code(found ? 200 : 404);
+        }
+    });
+
+    server.route({
+        method: 'DELETE',
+        path: '/api/people/{id}/things/{thingId}',
+        handler: function (request, reply) {
+            var found = get(request.params.id);
+            var foundThing = getThing(request.params.thingId, found.things);
+            if (foundThing) found.things = _.without(found.things, foundThing);
+            reply(foundThing).code(found ? 200 : 404);
+        }
+    });
+
+    server.route({
+        method: 'PUT',
+        path: '/api/people/{id}/things/{thingId}',
+        handler: function (request, reply) {
+            var found = get(request.params.id);
+            var foundThing = getThing(request.params.thingId, found.things);
+            if (foundThing) _.extend(foundThing, request.payload);
+            reply(foundThing).code(found ? 200 : 404);
         }
     });
 

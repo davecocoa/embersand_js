@@ -3,4 +3,8 @@ li.person.list-group-item.container
   a(data-hook="name")
   span.btn-group.pull-right 
     a.btn.btn-default(data-hook="action-edit") edit 
-    a.btn.btn-danger(href="#", data-hook="action-delete") delete
+    button.btn.btn-danger(data-hook="action-delete") delete
+  br
+  em Things:
+  button.btn.btn-default(data-hook="action-add-thing") Add Random Thing
+  ul(data-hook="things-container")

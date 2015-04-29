@@ -1,4 +1,5 @@
 var AmpersandModel = require('ampersand-model');
+var Things = require('./things');
 
 
 module.exports = AmpersandModel.extend({
@@ -7,6 +8,9 @@ module.exports = AmpersandModel.extend({
         firstName: ['string', true, ''],
         lastName: ['string', true, ''],
         coolnessFactor: ['number', true, 5]
+    },
+    collections: {
+        things: Things
     },
     session: {
         selected: ['boolean', true, false]
@@ -36,5 +40,6 @@ module.exports = AmpersandModel.extend({
                 return '/person/' + this.id;
             }
         }
-    }
+    },
+    
 });
