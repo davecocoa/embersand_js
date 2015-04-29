@@ -5,21 +5,21 @@ var people = [
         id: 1,
         firstName: 'Henrik',
         lastName: 'Joreteg',
-        things: [{id:42, name:'garbage'},{id:73, name:'magic'}],
+        things: [1, 2],
         coolnessFactor: 11
     },
     {
         id: 2,
         firstName: 'Bob',
         lastName: 'Saget',
-        things: [],
+        things: [3],
         coolnessFactor: 2
     },
     {
         id: 3,
         firstName: 'Larry',
         lastName: 'King',
-        things: [],
+        things: [2,3],
         coolnessFactor: 4
     },
     {
@@ -44,7 +44,24 @@ var people = [
         coolnessFactor: 4
     }
 ];
+
+var things = [
+    {
+        id: 1,
+        name: 'garbage'
+    },
+    {
+        id: 2,
+        name: 'magic'
+    },
+    {
+        id: 3,
+        name: 'enthusiasm'
+    }
+];
+
 var id = 7;
+var thingId = 4;
 
 function get(id) {
     return _.findWhere(people, {id: parseInt(id + '', 10)});
@@ -59,7 +76,7 @@ exports.register = function (server, options, next) {
         method: 'GET',
         path: '/api/people',
         handler: function (request, reply) {
-            reply(people);
+            reply({persons: people, things: things});
         }
     });
 
@@ -69,8 +86,9 @@ exports.register = function (server, options, next) {
         handler: function (request, reply) {
             var person = request.payload;
             person.id = id++;
+            person.things = [];
             people.push(person);
-            reply(person).code(201);
+            reply({person: person}).code(201);
         }
     });
 
@@ -79,7 +97,7 @@ exports.register = function (server, options, next) {
         path: '/api/people/{id}',
         handler: function (request, reply) {
             var found = get(request.params.id);
-            reply(found).code(found ? 200 : 404);
+            reply({person: found, things: things}).code(found ? 200 : 404);
         }
     });
 
@@ -89,7 +107,7 @@ exports.register = function (server, options, next) {
         handler: function (request, reply) {
             var found = get(request.params.id);
             if (found) people = _.without(people, found);
-            reply(found).code(found ? 200 : 404);
+            reply({person: found}).code(found ? 200 : 404);
         }
     });
 
@@ -99,7 +117,7 @@ exports.register = function (server, options, next) {
         handler: function (request, reply) {
             var found = get(request.params.id);
             if (found) _.extend(found, request.payload);
-            reply(found).code(found ? 200 : 404);
+            reply({person: found}).code(found ? 200 : 404);
         }
     });
 
@@ -113,10 +131,10 @@ exports.register = function (server, options, next) {
         path: '/api/people/{id}/things',
         handler: function (request, reply) {
             var thing = request.payload;
-            thing.id = Math.random()*1000|0;
+            thing.id = thingId++;
             var found = get(request.params.id);
             found.things.push(thing);
-            reply(thing).code(201);
+            reply({thing: thing}).code(201);
         }
     });
 
@@ -125,7 +143,7 @@ exports.register = function (server, options, next) {
         path: '/api/people/{id}/things',
         handler: function (request, reply) {
             var found = get(request.params.id);
-            reply(found.things).code(found ? 200 : 404);
+            reply({things: found.things}).code(found ? 200 : 404);
         }
     });
 
@@ -136,7 +154,7 @@ exports.register = function (server, options, next) {
             var found = get(request.params.id);
             var foundThing = getThing(request.params.thingId, found.things);
             if (foundThing) found.things = _.without(found.things, foundThing);
-            reply(foundThing).code(found ? 200 : 404);
+            reply({thing: foundThing}).code(found ? 200 : 404);
         }
     });
 
@@ -147,7 +165,7 @@ exports.register = function (server, options, next) {
             var found = get(request.params.id);
             var foundThing = getThing(request.params.thingId, found.things);
             if (foundThing) _.extend(foundThing, request.payload);
-            reply(foundThing).code(found ? 200 : 404);
+            reply({thing: foundThing}).code(found ? 200 : 404);
         }
     });
 
