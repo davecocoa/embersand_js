@@ -1,5 +1,6 @@
 var AmpersandModel = require('ampersand-model');
 var Things = require('./things');
+var app = require('ampersand-app');
 
 
 module.exports = AmpersandModel.extend({
@@ -41,5 +42,8 @@ module.exports = AmpersandModel.extend({
             }
         }
     },
-    
+    initialize: function(params){
+        this.things = new Things(params.things.map(function(thingId){ return app.thingStore.get(thingId); }));
+        return this;
+    }
 });

@@ -5,6 +5,7 @@ var Router = require('./router');
 var MainView = require('./views/main');
 var Me = require('./models/me');
 var People = require('./models/persons');
+var Things = require('./models/things');
 var domReady = require('domready');
 
 // attach our app to `window` so we can
@@ -16,6 +17,7 @@ app.extend({
     me: new Me(),
     people: new People(),
     router: new Router(),
+    thingStore: new Things(),
     // This is where it all starts
     init: function() {
         // Create and attach our main view
